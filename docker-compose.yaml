@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+
+  db:
+    image: postgres:latest
+    env_file:
+      - .env
+    ports:
+      - '5433:5432'
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pg_db
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - pg_data:/var/lib/postgresql/data/pg_db
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -d $${DATABASE_NAME} -U $${DATABASE_USER}' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    command: python3 manage.py runserver 0.0.0.0:8000
+    ports:
+      - '8000:8000'
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pg_data:
