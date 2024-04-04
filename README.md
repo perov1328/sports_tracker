@@ -62,6 +62,5 @@
 
 Для запуска работы Docker в фоновом режиме используйте следующие команды:
 
-1. docker-compose build
-2. docker compose exec app python3 manage.py migrate
-3. docker-compose app
+1. _**docker-compose build**_
+2. _**docker-compose up**_
