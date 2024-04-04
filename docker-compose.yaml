@@ -9,10 +9,12 @@ services:
     ports:
       - '5433:5432'
     environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_HOST=${DATABASE_HOST}
       - PGDATA=/var/lib/postgresql/data/pg_db
       - POSTGRES_HOST_AUTH_METHOD=trust
-    volumes:
-      - pg_data:/var/lib/postgresql/data/pg_db
     healthcheck:
       test: [ 'CMD-SHELL', 'pg_isready -d $${DATABASE_NAME} -U $${DATABASE_USER}' ]
       interval: 10s
@@ -21,7 +23,8 @@ services:
 
   app:
     build: .
-    command: python3 manage.py runserver 0.0.0.0:8000
+    tty: true
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     ports:
       - '8000:8000'
     depends_on:
